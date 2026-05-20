@@ -635,7 +635,7 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "schema-inspect-maintained"
-version = "1.2.1"
+version = "1.2.2"
 description = "Schema inspection for PostgreSQL (and possibly others)"
 optional = false
 python-versions = ">=3.9,<4"
@@ -856,4 +856,4 @@ pg = ["psycopg2-binary"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "a6543a1ae72af9c42fdcbd23469bd3130afdf8cf17dc92b507b7dc3b92938c44"
+content-hash = "f1a15871527f36fb410119f8761a8f99bf2c26dc7f811dba6ea639b5e13fae0e"

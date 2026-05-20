@@ -102,6 +102,7 @@ class Migration(object):
 
         self.add(self.changes.sequences(creations_only=True))
         self.add(self.changes.comments(drops_only=True, modifications=False))
+        self.add(self.changes.securitylabels(drops_only=True, modifications=False))
         self.add(self.changes.triggers(drops_only=True))
         self.add(self.changes.rules(drops_only=True))
         self.add(self.changes.rlspolicies(drops_only=True))
@@ -133,6 +134,7 @@ class Migration(object):
         self.add(self.changes.rules(creations_only=True))
         self.add(self.changes.triggers(creations_only=True))
         self.add(self.changes.comments(creations_only=True))
+        self.add(self.changes.securitylabels(creations_only=True))
         self.add(self.changes.collations(drops_only=True))
         self.add(self.changes.schemas(drops_only=True))
 

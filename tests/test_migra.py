@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 # import yaml
 from pytest import raises
 from schemainspect import get_inspector
-from schemainspect.pg.obj import InspectedRule
+from schemainspect.pg.obj import InspectedRule, InspectedSecurityLabel
 from sqlbag import S, load_sql_from_file, temporary_database
 
 from migra import Migration, Statements, UnsafeMigrationException
@@ -162,6 +162,36 @@ def test_rule_creations():
     statements = Changes(empty, target).rules(creations_only=True)
 
     assert statements == Statements([rule.create_statement])
+
+
+def test_security_label_changes():
+    old_label = InspectedSecurityLabel(
+        schema="public",
+        object_type="table",
+        object_identity="public.accounts",
+        provider="selinux",
+        label="old_label",
+    )
+    new_label = InspectedSecurityLabel(
+        schema="public",
+        object_type="table",
+        object_identity="public.accounts",
+        provider="selinux",
+        label="new_label",
+    )
+    empty = FakeInspector(securitylabels={})
+    source = FakeInspector(securitylabels={old_label.key: old_label})
+    target = FakeInspector(securitylabels={new_label.key: new_label})
+
+    assert Changes(empty, target).securitylabels(creations_only=True) == Statements(
+        [new_label.create_statement]
+    )
+    assert Changes(source, empty).securitylabels(drops_only=True) == Statements(
+        [old_label.drop_statement]
+    )
+    assert Changes(source, target).securitylabels(creations_only=True) == Statements(
+        [new_label.create_statement]
+    )
 
 
 def test_cli_outputs_rule_changes(monkeypatch):

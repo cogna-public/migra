@@ -16,6 +16,7 @@ THINGS = [
     "constraints",
     "functions",
     "comments",
+    "securitylabels",
     "views",
     "indexes",
     "extensions",
