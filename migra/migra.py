@@ -61,8 +61,6 @@ class Migration(object):
         self.statements = Statements()
 
     def apply(self):
-        from sqlbag import raw_execute
-
         for stmt in self.statements:
             raw_execute(self.s_from, stmt)
         self.changes.i_from = get_inspector(
@@ -105,6 +103,7 @@ class Migration(object):
         self.add(self.changes.sequences(creations_only=True))
         self.add(self.changes.comments(drops_only=True, modifications=False))
         self.add(self.changes.triggers(drops_only=True))
+        self.add(self.changes.rules(drops_only=True))
         self.add(self.changes.rlspolicies(drops_only=True))
         self.add(self.changes.non_pk_constraints(drops_only=True))
 
@@ -131,6 +130,7 @@ class Migration(object):
             if roles:
                 self.add(self.changes.memberships(creations_only=True))
         self.add(self.changes.rlspolicies(creations_only=True))
+        self.add(self.changes.rules(creations_only=True))
         self.add(self.changes.triggers(creations_only=True))
         self.add(self.changes.comments(creations_only=True))
         self.add(self.changes.collations(drops_only=True))

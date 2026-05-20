@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import io
-import os
 from difflib import ndiff as difflib_diff
 from typing import List
 
@@ -11,9 +10,12 @@ from dotenv import load_dotenv
 # import yaml
 from pytest import raises
 from schemainspect import get_inspector
+from schemainspect.pg.obj import InspectedRule
 from sqlbag import S, load_sql_from_file, temporary_database
 
 from migra import Migration, Statements, UnsafeMigrationException
+from migra.changes import Changes
+import migra.command as command
 from migra.command import MigrationStatus, parse_args, run
 
 load_dotenv()
@@ -91,6 +93,7 @@ fixtures = [
     "triggers",
     "triggers2",
     "triggers3",
+    "rules",
     "dependencies",
     "dependencies2",
     "dependencies3",
@@ -135,6 +138,57 @@ SELECT 1 FROM pg_roles WHERE rolname=:rolename
 def test_rls():
     for FIXTURE_NAME in ["rls", "rls2"]:
         do_fixture_test(FIXTURE_NAME, with_privileges=True)
+
+
+class FakeInspector:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+
+def test_rule_creations():
+    rule = InspectedRule(
+        name="protect_accounts",
+        schema="public",
+        table_name="accounts",
+        enabled="O",
+        full_definition=(
+            "CREATE RULE protect_accounts AS\n"
+            "    ON UPDATE TO public.accounts DO INSTEAD NOTHING"
+        ),
+    )
+    empty = FakeInspector(rules={}, selectables={}, enums={})
+    target = FakeInspector(rules={rule.signature: rule}, selectables={}, enums={})
+
+    statements = Changes(empty, target).rules(creations_only=True)
+
+    assert statements == Statements([rule.create_statement])
+
+
+def test_cli_outputs_rule_changes(monkeypatch):
+    rule_statement = 'drop rule if exists "protect_accounts" on "public"."accounts";'
+
+    class RuleMigration:
+        def __init__(self, *args, **kwargs):
+            self.statements = Statements()
+
+        def set_safety(self, safety_on):
+            self.statements.safe = safety_on
+
+        def add_all_changes(self, privileges=False, roles=False):
+            self.statements.append(rule_statement)
+
+        @property
+        def sql(self):
+            return self.statements.sql
+
+    monkeypatch.setattr(command, "Migration", RuleMigration)
+
+    args = parse_args(["--unsafe", "EMPTY", "EMPTY"])
+    out, err = outs()
+
+    assert run(args, out=out, err=err) == MigrationStatus.CHANGES_FOUND
+    assert out.getvalue() == rule_statement + "\n\n\n"
+    assert err.getvalue() == ""
 
 
 check_expected = True

@@ -23,6 +23,7 @@ THINGS = [
     "collations",
     "rlspolicies",
     "triggers",
+    "rules",
     "roles",
     "memberships",
 ]
@@ -637,6 +638,18 @@ class Changes(object):
             get_trigger_changes,
             od(sorted(self.i_from.triggers.items())),
             od(sorted(self.i_target.triggers.items())),
+            od(sorted(self.i_from.selectables.items())),
+            od(sorted(self.i_target.selectables.items())),
+            self.i_from.enums,
+            self.i_target.enums,
+        )
+
+    @property
+    def rules(self):
+        return partial(
+            get_trigger_changes,
+            od(sorted(self.i_from.rules.items())),
+            od(sorted(self.i_target.rules.items())),
             od(sorted(self.i_from.selectables.items())),
             od(sorted(self.i_target.selectables.items())),
             self.i_from.enums,
