@@ -2,7 +2,7 @@ FROM python:3.12-alpine
 
 RUN apk add --update --no-cache --upgrade postgresql-libs && \
   apk add --no-cache --virtual=build-dependencies build-base postgresql-dev && \
-  pip install --no-cache-dir packaging psycopg2-binary migra-maintained && \
+  pip install --no-cache-dir packaging psycopg2-binary cogna-migra && \
   apk del build-dependencies && \
   rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
