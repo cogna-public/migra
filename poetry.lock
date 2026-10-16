@@ -65,7 +65,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 [[package]]
 name = "cogna-schemainspect"
 version = "1.2.3"
-description = "Schema inspection for PostgreSQL (and possibly others)"
+description = "Schema inspection for PostgreSQL (and possibly others). Public fork for cogna changes."
 optional = false
 python-versions = ">=3.9,<4"
 groups = ["main", "dev"]
