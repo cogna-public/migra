@@ -1,0 +1,119 @@
+# Bump the version, then tag and release, on every push to master
+# - Bumps the patch version by default (1.1.2 → 1.1.3); run it by hand for minor or major
+# - Runs as the cogna-package-releaser app, the only actor allowed to push to master
+#   without review and to create v* tags
+# - The release it creates triggers publish.yml
+
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version part to bump
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      notes:
+        description: Release notes (defaults to the commits since the last tag)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-version
+  cancel-in-progress: false
+
+jobs:
+  bump-version:
+    name: Auto-bump version and create release
+    runs-on: ubuntu-latest
+    # Skip the app's own "publish:" commits to avoid a loop
+    if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'publish:')
+    # Holds the app key; only master can deploy to it
+    environment: release
+    steps:
+      - name: Create release app token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Look up the app's bot user
+        id: bot-user
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: echo "id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3.2.4
+        with:
+          python-version: "3.13"
+          enable-cache: false
+
+      - name: Bump version
+        env:
+          BUMP: ${{ inputs.bump || 'patch' }}
+        run: |
+          # Poetry project with no uv.lock; --frozen stops uv creating one
+          uv version --bump "$BUMP" --frozen
+          NEW_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+          echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
+          echo "Bumped to version: $NEW_VERSION"
+
+      - name: Commit version bump
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          BOT_USER_ID: ${{ steps.bot-user.outputs.id }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${BOT_USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          # Set the token only now, after uv has run, so earlier steps can't read it
+          git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add pyproject.toml
+          git commit -m "publish: bump to v${NEW_VERSION}"
+          git push origin master
+
+      - name: Create tag and release
+        env:
+          # The app token, unlike GITHUB_TOKEN, lets the release trigger publish.yml
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NOTES: ${{ inputs.notes }}
+        run: |
+          git tag "v${NEW_VERSION}"
+          git push origin "v${NEW_VERSION}"
+
+          if [ -n "$NOTES" ]; then
+            RELEASE_NOTES="$NOTES"
+          else
+            # Commits since the last tag
+            LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [ -n "$LAST_TAG" ]; then
+              RELEASE_NOTES=$(git log --pretty=format:"- %s" "${LAST_TAG}..HEAD" | grep -v "^- publish:")
+            else
+              RELEASE_NOTES="Initial release"
+            fi
+          fi
+
+          gh release create "v${NEW_VERSION}" \
+            --title "v${NEW_VERSION}" \
+            --notes "$RELEASE_NOTES" \
+            --repo "$GITHUB_REPOSITORY"
