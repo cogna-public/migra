@@ -9,10 +9,6 @@ description = "Like `diff` but for PostgreSQL schemas"
 [tool.poetry]
 packages = [{ include = "migra" }]
 
-[tool.semantic_release]
-version_toml = ["pyproject.toml:project.version"]
-build_command = "pip install poetry; poetry install; poetry build"
-
 [project.urls]
 repository = "https://github.com/djrobstep/migra"
 homepage = "https://databaseci.com/docs/migra"
