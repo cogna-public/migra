@@ -1,5 +1,5 @@
 [project]
-name = "migra-maintained"
+name = "cogna-migra"
 version = "1.1.2"
 authors = [{ name = "Robert Lechte", email = "robertlechte@gmail.com" }]
 license = "Unlicense"
@@ -17,12 +17,12 @@ homepage = "https://databaseci.com/docs/migra"
 python = ">=3.9,<4"
 sqlbag = "*"
 six = "*"
-schema-inspect-maintained = ">=1.2.2"
+cogna-schemainspect = ">=1.2.2"
 psycopg2-binary = { version=">=2.9.7,<3", optional = true }
 greenlet = "^3.2.2"
 
 [tool.poetry.group.dev.dependencies]
-schema-inspect-maintained = {path="../schemainspect", develop=true}
+cogna-schemainspect = {path="../schemainspect", develop=true}
 sqlbag = "*"
 pytest = "*"
 pytest-cov = "*"

@@ -24,19 +24,19 @@ usage: migra [-h] [--unsafe] [--schema SCHEMA] [--exclude_schema EXCLUDE_SCHEMA]
 ### Command Line
 
 ```bash
-pip install migra-maintained
+pip install cogna-migra
 migra db_url_from db_url_target
 ```
 
 ### Python
 ```bash
-pip install migra-maintained
+pip install cogna-migra
 ```
 
 ```python
-# Use migra_maintained instead of migra-maintained
-from migra_maintained import Migration, Statements
-from migra_maintained.command import parse_args, run
+# The import name is still migra
+from migra import Migration, Statements
+from migra.command import parse_args, run
 ```
 
 ### Docker
