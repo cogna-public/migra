@@ -1,32 +1,28 @@
 [project]
-name = "migra-maintained"
+name = "cogna-migra"
 version = "1.1.2"
-authors = [{ name = "Robert Lechte", email = "robertlechte@gmail.com" }]
+authors = [{ name = "Cogna Co", email = "info@cogna.co" }]
 license = "Unlicense"
 readme = "README.md"
-description = "Like `diff` but for PostgreSQL schemas"
+description = "Like `diff` but for PostgreSQL schemas. Public fork for cogna changes."
 
 [tool.poetry]
 packages = [{ include = "migra" }]
 
-[tool.semantic_release]
-version_toml = ["pyproject.toml:project.version"]
-build_command = "pip install poetry; poetry install; poetry build"
-
 [project.urls]
-repository = "https://github.com/djrobstep/migra"
-homepage = "https://databaseci.com/docs/migra"
+repository = "https://github.com/cogna-public/migra"
+homepage = "https://github.com/cogna-public/migra"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
 sqlbag = "*"
 six = "*"
-schema-inspect-maintained = ">=1.2.2"
+cogna-schemainspect = ">=1.2.2"
 psycopg2-binary = { version=">=2.9.7,<3", optional = true }
 greenlet = "^3.2.2"
 
 [tool.poetry.group.dev.dependencies]
-schema-inspect-maintained = {path="../schemainspect", develop=true}
+cogna-schemainspect = {path="../schemainspect", develop=true}
 sqlbag = "*"
 pytest = "*"
 pytest-cov = "*"
@@ -50,5 +46,5 @@ include_trailing_comma = true
 line_length = 88
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

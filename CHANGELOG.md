@@ -1,6 +1,6 @@
 # CHANGELOG
 
-<!-- version list -->
+From v1.1.3 the package is published to PyPI as `cogna-migra` (previously `migra-maintained`), and releases are recorded in [GitHub Releases](https://github.com/cogna-public/migra/releases). `.github/workflows/auto-version.yml` bumps the patch version on every merge to `master`, or the minor or major version when the PR title contains `[minor]` or `[major]`.
 
 ## v1.1.0 (2025-06-02)
 
