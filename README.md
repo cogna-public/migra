@@ -21,32 +21,44 @@ Most features of PostgreSQL are supported.
 usage: migra [-h] [--unsafe] [--schema SCHEMA] [--exclude_schema EXCLUDE_SCHEMA] [--create-extensions-only] [--ignore-extension-versions] [--with-privileges] [--force-utf8]
              dburl_from dburl_target
 
+### Installing
+
+Cogna publishes this fork to PyPI as `cogna-migra`. It installs the same top-level `migra` package as `migra` and `migra-maintained`, so installing it alongside either one overwrites files, and uninstalling one breaks the other. Uninstall them first:
+
+```bash
+pip uninstall migra migra-maintained schema-inspect-maintained
+pip install cogna-migra
+```
+
+It depends on `cogna-schemainspect` in place of `schemainspect` or `schema-inspect-maintained`.
+
 ### Command Line
 
 ```bash
-pip install migra-maintained
+pip install cogna-migra
 migra db_url_from db_url_target
 ```
 
 ### Python
 ```bash
-pip install migra-maintained
+pip install cogna-migra
 ```
 
 ```python
-# Use migra_maintained instead of migra-maintained
-from migra_maintained import Migration, Statements
-from migra_maintained.command import parse_args, run
+# The import name is still migra
+from migra import Migration, Statements
+from migra.command import parse_args, run
 ```
 
 ### Docker
 
+No image is published for this fork. Build one locally from the `Dockerfile`, which installs `cogna-migra` from PyPI:
+
 ```bash
-docker pull philipandrewweedewang/migra:latest
-docker run --rm philipandrewweedewang/migra:latest \
+./build-docker.sh
+docker run --rm migra:latest \
   postgresql://user:password@host1:port/dbname1 \
   postgresql://user:password@host2:port/dbname2
-
 ```
 
 **Migra supports PostgreSQL >= 9 only.** Known issues exist with earlier versions. More recent versions are more comprehensively tested. Development resources are limited, and feature support rather than backwards compatibility is prioritised.
