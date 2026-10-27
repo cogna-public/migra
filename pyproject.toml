@@ -5,6 +5,8 @@ authors = [{ name = "Cogna Co", email = "info@cogna.co" }]
 license = "Unlicense"
 readme = "README.md"
 description = "Like `diff` but for PostgreSQL schemas. Public fork for cogna changes."
+# Read from [tool.poetry.dependencies]
+dynamic = ["dependencies", "requires-python"]
 
 [tool.poetry]
 packages = [{ include = "migra" }]
