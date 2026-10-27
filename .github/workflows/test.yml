@@ -47,9 +47,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: cogna-public/schemainspect
-          # Pinned like the actions, to a commit from cogna-public/schemainspect#6, which
-          # renames the package to cogna-schemainspect. Move to v1.2.4 once released.
-          ref: 428ddb118b3ca8ad1f6e085726e28e675d044e28
+          # Pinned like the actions; the dev group installs it from ../schemainspect
+          ref: d4b7be5bfffd291e2f0a249360ce718a3fd98ae2 # v1.2.4
           path: schemainspect
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
