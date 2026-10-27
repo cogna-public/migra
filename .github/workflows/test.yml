@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: cogna-public/schemainspect
-          # Pinned like the actions, to the head of cogna-public/schemainspect#6, which
+          # Pinned like the actions, to a commit from cogna-public/schemainspect#6, which
           # renames the package to cogna-schemainspect. Move to v1.2.4 once released.
           ref: 428ddb118b3ca8ad1f6e085726e28e675d044e28
           path: schemainspect
