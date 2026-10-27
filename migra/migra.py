@@ -106,6 +106,8 @@ class Migration(object):
         self.add(self.changes.triggers(drops_only=True))
         self.add(self.changes.rules(drops_only=True))
         self.add(self.changes.rlspolicies(drops_only=True))
+        if privileges and not roles:
+            self.add(self.changes.privileges(drops_only=True))
         self.add(self.changes.non_pk_constraints(drops_only=True))
 
         self.add(self.changes.mv_indexes(drops_only=True))
