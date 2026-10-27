@@ -1,8 +1,12 @@
 name: Test
 
+# Also runs on every push to master, so auto-version.yml can wait for it before
+# releasing. auto-version.yml matches the job names.
 on:
   pull_request:
     branches: [master, next]
+  push:
+    branches: [master]
 
 permissions:
   contents: read
