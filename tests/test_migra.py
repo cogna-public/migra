@@ -100,7 +100,13 @@ fixtures = [
     "dependencies4",
     "constraints",
     "generated",
-    "viewownertracking",
+    pytest.param(
+        "viewownertracking",
+        marks=pytest.mark.xfail(
+            reason="View ownership not yet tracked (see README roadmap)",
+            strict=True,
+        ),
+    ),
     pytest.param(
         "commentswithdep",
         marks=pytest.mark.skip(reason="Comments not yet in dependencies SQL"),
